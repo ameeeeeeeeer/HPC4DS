@@ -1,99 +1,101 @@
 Pavia
-16
-time for creating and initializing x matrix 592091
-time for creating and initializing x_transpose matrix 14389
-time for creating and initializing x_product matrix 3347
-time for reading main matrix 43713964
-time for calculate average for all features 788995
-time for subtract average  365469
-time for transpose  78823
-time for product  24865000
-time for sorting main matrix 421
-time for final product  3676451
+8
+time for creating and initializing x matrix 708089
+time for creating and initializing x_transpose matrix 2631
+time for creating and initializing x_product matrix 132
+time for reading main matrix 92882469
+time for calculate average for all features 1114612
+time for subtract average  1333265
+time for transpose  161642
+time for product  57456818
+time for sorting main matrix 18928
+time for final product  8194251
 
+
+16
+time for sorting main matrix 412
+time for final product  4234164
+time for creating and initializing x matrix 708260
+time for creating and initializing x_transpose matrix 6837
+time for creating and initializing x_product matrix 16
+time for reading main matrix 50476208
+time for calculate average for all features 1043421
+time for subtract average  492151
+time for transpose  86855
+time for product  41172714
 
 32
-time for creating and initializing x matrix 674405
-time for creating and initializing x_transpose matrix 5464
-time for creating and initializing x_product matrix 13
-time for reading main matrix 43143431
-time for calculate average for all features 899147
-time for subtract average  382587
-time for transpose  70259
-time for product  29443574
-time for sorting main matrix 360
-time for final product  3441357
+time for creating and initializing x matrix 1092933
+time for creating and initializing x_transpose matrix 32981
+time for creating and initializing x_product matrix 24735
+time for reading main matrix 75615348
+time for calculate average for all features 2821830
+time for subtract average  5198009
+time for transpose  121599
+time for product  29147141
+time for sorting main matrix 1007
+time for final product  2162251
 
 48
-time for creating and initializing x matrix 671328
-time for creating and initializing x_transpose matrix 979
-time for creating and initializing x_product matrix 13
-time for reading main matrix 44442164
-time for calculate average for all features 885155
-time for subtract average  351842
-time for transpose  76590
-time for product  22717761
-time for sorting main matrix 392
-time for final product  3595750
-
-64
-time for creating and initializing x matrix 569403
-time for creating and initializing x_transpose matrix 6481
-time for creating and initializing x_product matrix 11
-time for reading main matrix 44069618
-time for calculate average for all features 765967
-time for subtract average  342663
-time for transpose  83234
-time for product  25291005
-time for sorting main matrix 349
-time for final product  3592398
+time for creating and initializing x matrix 1071555
+time for creating and initializing x_transpose matrix 26714
+time for creating and initializing x_product matrix 23013
+time for reading main matrix 75759105
+time for calculate average for all features 7043855
+time for subtract average  5753004
+time for transpose  88441
+time for product  40614378
+time for sorting main matrix 218
+time for final product  1521551
 
 PaviaU
+8
+time for creating and initializing x matrix 137652
+time for creating and initializing x_transpose matrix 7168
+time for creating and initializing x_product matrix 79
+time for reading main matrix 2485831
+time for calculate average for all features 123387
+time for subtract average  113925
+time for transpose  36650
+time for product  4224496
+time for sorting main matrix 14692
+time for final product  2345817
+
 16
-time for creating and initializing x matrix 183178
-time for creating and initializing x_transpose matrix 8181
-time for creating and initializing x_product matrix 9864
-time for reading main matrix 2554161
-time for calculate average for all features 159209
-time for subtract average  99129
-time for transpose  19600
-time for product  4534241
-time for sorting main matrix 300
-time for final product  998269
+time for creating and initializing x matrix 199467
+time for creating and initializing x_transpose matrix 6595
+time for creating and initializing x_product matrix 130
+time for reading main matrix 2893879
+time for calculate average for all features 205693
+time for subtract average  134746
+time for transpose  22929
+time for product  6166610
+time for sorting main matrix 303
+time for final product  1081064
 
 32
-time for creating and initializing x matrix 189944
-time for creating and initializing x_transpose matrix 4544
-time for creating and initializing x_product matrix 150
-time for reading main matrix 2860134
-time for calculate average for all features 198920
-time for subtract average  121278
-time for transpose  20779
-time for product  5314634
-time for sorting main matrix 313
-time for final product  1014144
+time for creating and initializing x matrix 209172
+time for creating and initializing x_transpose matrix 1046
+time for creating and initializing x_product matrix 22
+time for reading main matrix 3397838
+time for calculate average for all features 665670
+time for subtract average  95541
+time for transpose  16049
+time for product  2695490
+time for sorting main matrix 25211
+time for final product  630673
 
 48
-time for creating and initializing x matrix 174514
-time for creating and initializing x_transpose matrix 3744
-time for creating and initializing x_product matrix 110
-time for reading main matrix 2286769
-time for calculate average for all features 216785
-time for subtract average  108888
-time for transpose  18730
-time for product  4758761
-time for sorting main matrix 362
-time for final product  1019224
+time for creating and initializing x matrix 316173
+time for creating and initializing x_transpose matrix 31236
+time for creating and initializing x_product matrix 25484
+time for reading main matrix 3059372
+time for calculate average for all features 919321
+time for subtract average  106928
+time for transpose  8578
+time for product  2042415
+time for sorting main matrix 228
+time for final product  392221
 
-64
-time for creating and initializing x matrix 169206
-time for creating and initializing x_transpose matrix 3953
-time for creating and initializing x_product matrix 138
-time for reading main matrix 2320741
-time for calculate average for all features 215798
-time for subtract average  111740
-time for transpose  17224
-time for product  4788878
-time for sorting main matrix 281
-time for final product  994987
+
 
