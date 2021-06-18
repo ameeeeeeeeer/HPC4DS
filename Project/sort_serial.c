@@ -1,18 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <omp.h>
+
 
 //DECLARED FUNCTION
 void create_pointer(int** matrix, int y, int value); //to creater rows in a dynamic matrix of int
+void create_pointer_float(float** matrix, int y, int value);
 void initialize_matrix(int** matrix, int x, int y); //to set all value of a int matrix to 0
 void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int* y); //to read feature matrix
 void average_calculation(float* average, int** x, int b_num,  int limit); //to calculate average for each feature
 void mean_subtraction(float* average, int** x, int b_num, int limit); //subtraction of the mean to each value of the matrix
+void transpose_calculation(int** x, int** x_transpose, int limit, int b_num); //transpose calulation
+void product_calculation_1(int** x, int** x_transpose, int** x_product, int limit, int b_num); //product calcolation in integer
+void product_calculation_2(int** x, float** eigenvectors, float** final_matrix, int limit, int b_num); //matrix product calulcation in float
+void sort(float* eigenvalues, float** eigenvectors, int b_num);//for sorting
 
 main(int argc, char **argv)
 {
-
-
 
 
 //GENRAL VARIABLE
@@ -73,22 +78,42 @@ main(int argc, char **argv)
 	/*close the file*/
 	fclose(matrix_file);
 	
-	//2. CENTERING
+
 	
-	/*average for every feature calculation*/
-	float* average=(float*)malloc((b_num+2) * sizeof(float));
-	 gettimeofday(&start, NULL);
-	average_calculation( average, x, b_num,  limit);
-	gettimeofday(&end, NULL);
-	printf("time for calculate average for all features %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
-	/*average subtraction*/
-    gettimeofday(&start, NULL);
-	mean_subtraction( average,  x, b_num, limit);
-	gettimeofday(&end, NULL);
-	printf("time for subtract average  %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
+	//4. EIGENVALUE CALCULATION
+	float* eigenvalues=(float*)malloc((b_num+2) * sizeof(float));
+	/*temporary*/
+	for(i=0; i<(b_num+2); i++)
+	{
+		eigenvalues[i]=i;
+	}
+	//eigenvectors matrix
+	float** eigenvectors=(float**)malloc((b_num+2) * sizeof(float*));
+	create_pointer_float(eigenvectors, (b_num+2), (b_num+2));
+	/*temporary*/
+	for(i=0; i<(b_num+2); i++)
+	{
+		for(j=0; j<(b_num+2); j++)
+		{
+			eigenvectors[i][j]=i*j;
+		}
+		
+	}
+	
+	//5. EIGENVALUES ORDERING AND EIGENVECTOR MATRIX CONSTRUCTION
+	gettimeofday(&start, NULL);
+	sort(eigenvalues, eigenvectors, b_num);
+		gettimeofday(&end, NULL);
+    printf("time for sorting main matrix %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
 
-
-
+	//6. FINAL PRODUCT
+	float** final_matrix=(float**)malloc((limit) * sizeof(float*));//final matrix declaration and initialization
+	create_pointer_float(final_matrix, limit, (b_num+2));
+	gettimeofday(&start, NULL);
+	product_calculation_2( x, eigenvectors, final_matrix, limit, b_num);
+		gettimeofday(&end, NULL);
+    printf("time for final product  %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
+	
 	
 	return 0;
 	
@@ -99,9 +124,21 @@ void create_pointer(int** matrix, int y, int value)
 {
 	 int i;
 
+
 	 for(i=0; i<y; i++){
     	
     	matrix[i] = (int *)malloc((value) * sizeof(int));
+ 
+	}
+}
+
+void create_pointer_float(float** matrix, int y, int value)
+{
+	 int i;
+
+	 for(i=0; i<y; i++){
+    	
+    	matrix[i] = (float *)malloc((value) * sizeof(float));
  
 	}
 }
@@ -112,6 +149,8 @@ void initialize_matrix(int** matrix, int x, int y)
 	int i;
 	int j;
 	
+	
+
 	for(i=0; i<y; i++)
 	{
 		for(j=0; j<x; j++)
@@ -122,6 +161,7 @@ void initialize_matrix(int** matrix, int x, int y)
 	
 
 }
+
 
 void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int* y)
 {
@@ -150,14 +190,12 @@ void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int
 	
 }
 
-
-
-
 void average_calculation(float* average, int** x, int b_num,  int limit)
 {
 			
 	int i;
 	int j;
+
 
 	for(i=0; i<(b_num+2); i++)
 	{
@@ -180,7 +218,7 @@ void average_calculation(float* average, int** x, int b_num,  int limit)
 			for(j=0; j<limit; j++)
 		    {
 		   	  
-		   	  average[i]+=average[i]+(x[j][i]/limit);
+		   	  average[i]+=(x[j][i]/limit);
 		   	  
 		   	
 		    }		
@@ -193,6 +231,7 @@ void mean_subtraction(float* average, int** x, int b_num, int limit)
 {
 	int i;
 	int j;
+
 
 	for(i=0; i<(b_num+2); i++)
 	{
@@ -207,3 +246,133 @@ void mean_subtraction(float* average, int** x, int b_num, int limit)
 	}
 	
 }
+
+void transpose_calculation(int** x, int** x_transpose, int limit, int b_num)
+{
+	int i;
+	int j;
+	
+	
+
+	for(i=0; i<limit; i++)
+	{
+		for(j=0; j<b_num+2; j++)
+		{
+			x_transpose[j][i]=x[i][j];
+		}
+	}
+}
+
+
+void product_calculation_1(int** x, int** x_transpose, int** x_product, int limit, int b_num)
+{
+	
+	int i;
+	int j;
+	
+	
+	for(i=0; i<(b_num+2);i++)
+	{
+		for(j=0; j<(b_num+2); j++)
+		{
+			int result=0;
+			int k;
+			for(k=0; k<(limit); k++)
+			{
+			    result+=x_transpose[i][k]*x[k][j];	
+			}
+			
+			x_product[i][j]=result;
+		}
+		
+	}
+	
+}
+
+
+
+void product_calculation_2(int** x, float** eigenvectors, float** final_matrix, int limit, int b_num)
+{
+	
+	int i;
+	int j;
+	
+
+	for(i=0; i<(limit);i++)
+	{
+		for(j=0; j<(b_num+2); j++)
+		{
+			int result=0;
+			int k;
+			for(k=0; k<(b_num+2); k++)
+			{
+			    result+=x[i][k]*eigenvectors[k][j];	
+			}
+			
+			final_matrix[i][j]=result;
+			
+		}
+		
+	
+	}
+	
+	
+}
+
+
+void sort(float* eigenvalues, float** eigenvectors, int b_num)
+{
+	int phase;
+	int i;
+	
+
+	for (phase=0; phase<(b_num+3); phase++)
+	{
+		
+	
+		
+		if (phase%2==0)
+			for(i=1; i<b_num+2; i+=2)
+			{
+				if(eigenvalues[i-1]<eigenvalues[i])
+				{
+					float tmp=eigenvalues[i-1];
+					eigenvalues[i-1]=eigenvalues[i];
+					eigenvalues[i]=tmp;
+					
+					float* tmp1=eigenvectors[i-1];
+					eigenvectors[i-1]=eigenvectors[i];
+					eigenvectors[i]=tmp1;
+					
+					
+				}
+			}
+		
+		else		
+			for(i=1; i<b_num+1; i+=2)
+			{
+				if(eigenvalues[i]<eigenvalues[i+1])
+				{
+					float tmp=eigenvalues[i+1];
+					eigenvalues[i+1]=eigenvalues[i];
+					eigenvalues[i]=tmp;
+					
+					
+					float* tmp1=eigenvectors[i+1];
+					eigenvectors[i+1]=eigenvectors[i];
+					eigenvectors[i]=tmp1;
+					
+				}
+			}
+			
+		
+		
+	
+	
+	}
+	
+	
+	
+	
+}
+
