@@ -9,11 +9,6 @@ void create_pointer(int** matrix, int y, int value); //to creater rows in a dyna
 void create_pointer_float(float** matrix, int y, int value);
 void initialize_matrix(int** matrix, int x, int y); //to set all value of a int matrix to 0
 void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int* y); //to read feature matrix
-void average_calculation(float* average, int** x, int b_num,  int limit); //to calculate average for each feature
-void mean_subtraction(float* average, int** x, int b_num, int limit); //subtraction of the mean to each value of the matrix
-void transpose_calculation(int** x, int** x_transpose, int limit, int b_num); //transpose calulation
-void product_calculation_1(int** x, int** x_transpose, int** x_product, int limit, int b_num); //product calcolation in integer
-void product_calculation_2(int** x, float** eigenvectors, float** final_matrix, int limit, int b_num); //matrix product calulcation in float
 void sort(float* eigenvalues, float** eigenvectors, int b_num);//for sorting
 
 main(int argc, char **argv)
@@ -103,16 +98,14 @@ main(int argc, char **argv)
 	//5. EIGENVALUES ORDERING AND EIGENVECTOR MATRIX CONSTRUCTION
 	gettimeofday(&start, NULL);
 	sort(eigenvalues, eigenvectors, b_num);
-		gettimeofday(&end, NULL);
+	gettimeofday(&end, NULL);
     printf("time for sorting main matrix %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
+    
+  
+       
+   	
 
-	//6. FINAL PRODUCT
-	float** final_matrix=(float**)malloc((limit) * sizeof(float*));//final matrix declaration and initialization
-	create_pointer_float(final_matrix, limit, (b_num+2));
-	gettimeofday(&start, NULL);
-	product_calculation_2( x, eigenvectors, final_matrix, limit, b_num);
-		gettimeofday(&end, NULL);
-    printf("time for final product  %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
+	
 	
 	return 0;
 	
@@ -192,139 +185,12 @@ void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int
 	
 }
 
-void average_calculation(float* average, int** x, int b_num,  int limit)
-{
-			
-	int i;
-	int j;
-
-	#pragma omp parallel for \
-                default(none) private(i, j) shared(x, average, b_num, limit)
-	for(i=0; i<(b_num+2); i++)
-	{
-		int total=0;
-		int d=0;
-		if(i>1)
-		{
-		
-
-		   for(j=0; j<limit; j++)
-		   {
-		   	  
-		   	  total+=x[j][i];
-		   	  
-		   	
-		   }		
-		   average[i]=total/limit;
-		}else
-		{
-			for(j=0; j<limit; j++)
-		    {
-		   	  
-		   	  average[i]+=(x[j][i]/limit);
-		   	  
-		   	
-		    }		
-		}
-		
-	}
-}
-	
-void mean_subtraction(float* average, int** x, int b_num, int limit)
-{
-	int i;
-	int j;
-
-	#pragma omp parallel for \
-        default(none) private(i, j) shared(x, average, b_num, limit)
-	for(i=0; i<(b_num+2); i++)
-	{
-		
-	
-		   for(j=0; j<limit; j++)
-		   {
-		   	  
-		   	  x[j][i]=x[j][i]-average[i];
-		   	
-		   }
-	}
-	
-}
-
-void transpose_calculation(int** x, int** x_transpose, int limit, int b_num)
-{
-	int i;
-	int j;
-	
-	
-	#pragma omp parallel for \
-		default(none) private(i, j) shared(limit, b_num,  x, x_transpose)
-	for(i=0; i<limit; i++)
-	{
-		for(j=0; j<b_num+2; j++)
-		{
-			x_transpose[j][i]=x[i][j];
-		}
-	}
-}
-
-
-void product_calculation_1(int** x, int** x_transpose, int** x_product, int limit, int b_num)
-{
-	
-	int i;
-	int j;
-	
-	#pragma omp parallel for \
-                default(none) private(i, j) shared(x, b_num, limit, x_transpose, x_product)
-	for(i=0; i<(b_num+2);i++)
-	{
-		for(j=0; j<(b_num+2); j++)
-		{
-			int result=0;
-			int k;
-			for(k=0; k<(limit); k++)
-			{
-			    result+=x_transpose[i][k]*x[k][j];	
-			}
-			
-			x_product[i][j]=result;
-		}
-		
-	}
-	
-}
 
 
 
-void product_calculation_2(int** x, float** eigenvectors, float** final_matrix, int limit, int b_num)
-{
-	
-	int i;
-	int j;
-	
-	#pragma omp parallel for \
-                default(none) private(i, j) shared(x, b_num, limit, eigenvectors, final_matrix)
-	for(i=0; i<(limit);i++)
-	{
-		for(j=0; j<(b_num+2); j++)
-		{
-			int result=0;
-			int k;
-			for(k=0; k<(b_num+2); k++)
-			{
-			    result+=x[i][k]*eigenvectors[k][j];	
-			}
-			
-			final_matrix[i][j]=result;
-			
-		}
-		
-	
-	}
-	
-	
-}
+
+
+
 
 
 void sort(float* eigenvalues, float** eigenvectors, int b_num)
@@ -335,12 +201,10 @@ void sort(float* eigenvalues, float** eigenvectors, int b_num)
 	float* tmp1;
 	
 	#pragma omp parallel for\
-		default(none) private(i, tmp, tmp1, phase) shared(eigenvalues, eigenvectors, b_num) 
+		default(none) private(i, tmp, tmp1, phase) shared(eigenvalues, eigenvectors, b_num) schedule(guided,4)
 	for (phase=0; phase<(b_num+3); phase++)
 	{
-		
-	
-		
+
 		if (phase%2==0)
 			for(i=1; i<b_num+2; i+=2)
 			{

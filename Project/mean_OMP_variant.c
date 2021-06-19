@@ -3,19 +3,18 @@
 #include <sys/time.h>
 #include <omp.h>
 
-
 //DECLARED FUNCTION
 void create_pointer(int** matrix, int y, int value); //to creater rows in a dynamic matrix of int
 void initialize_matrix(int** matrix, int x, int y); //to set all value of a int matrix to 0
 void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int* y); //to read feature matrix
 void average_calculation(float* average, int** x, int b_num,  int limit); //to calculate average for each feature
 void mean_subtraction(float* average, int** x, int b_num, int limit); //subtraction of the mean to each value of the matrix
-void product_calculation_1(int** x, int** x_product, int limit, int b_num); //product calcolation in integer
 
 
 main(int argc, char **argv)
 {
 	
+
 
 //GENRAL VARIABLE
 	/*used for cycle*/
@@ -75,7 +74,7 @@ main(int argc, char **argv)
 	/*close the file*/
 	fclose(matrix_file);
 	
-		//2. CENTERING	
+	//2. CENTERING	
 	/*average for every feature calculation*/
 	float* average=(float*)malloc((b_num+2) * sizeof(float));
 	 gettimeofday(&start, NULL);
@@ -89,13 +88,6 @@ main(int argc, char **argv)
 	printf("time for subtract average  %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
 
 
-
-	//3. TRANSPOSE CALCULATION AND PRODUCT
-	/*transpose + first matrix product*/
-	gettimeofday(&start, NULL);
-	product_calculation_1( x,   x_product, limit,  b_num);
-	gettimeofday(&end, NULL);
-	printf("time for product+transpose  %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
 	
 	return 0;
 	
@@ -107,7 +99,7 @@ void create_pointer(int** matrix, int y, int value)
 	 int i;
 
 	#pragma omp parallel for \
-        default(none) private(i) shared(matrix, value, y) 
+                default(none) private(i) shared(matrix, value, y)
 	 for(i=0; i<y; i++){
     	
     	matrix[i] = (int *)malloc((value) * sizeof(int));
@@ -121,9 +113,8 @@ void initialize_matrix(int** matrix, int x, int y)
 	int i;
 	int j;
 	
-	
 	#pragma omp parallel for \
-        default(none) private(i, j) shared(matrix, x, y) 
+                default(none) private(i, j) shared(matrix, x, y)
 	for(i=0; i<y; i++)
 	{
 		for(j=0; j<x; j++)
@@ -134,6 +125,9 @@ void initialize_matrix(int** matrix, int x, int y)
 	
 
 }
+
+
+
 
 void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int* y)
 {
@@ -162,41 +156,36 @@ void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int
 	
 }
 
+
+
+
+
 void average_calculation(float* average, int** x, int b_num,  int limit)
 {
 			
 	int i;
 	int j;
 
-	#pragma omp parallel for \
-                default(none) private(i, j) shared(x, average, b_num, limit) 
+
+	
 	for(i=0; i<(b_num+2); i++)
 	{
-		int total=0;
-		int d=0;
-		if(i>1)
-		{
-		
-
+	
+			int total=0;
+	
+		   #pragma omp parallel for \
+		   		reduction(+: total)
 		   for(j=0; j<limit; j++)
 		   {
 		   	  
 		   	  total+=x[j][i];
 		   	  
 		   	
-		   }		
-		   average[i]=total/limit;
-		}else
-		{
-			for(j=0; j<limit; j++)
-		    {
-		   	  
-		   	  average[i]+=(x[j][i]/limit);
-		   	  
+		   }	
+		   
 		   	
-		    }		
-		}
-		
+		   average[i]=total/limit;
+	
 	}
 }
 	
@@ -205,8 +194,9 @@ void mean_subtraction(float* average, int** x, int b_num, int limit)
 	int i;
 	int j;
 
+
 	#pragma omp parallel for \
-        default(none) private(i, j) shared(x, average, b_num, limit) 
+        default(none) private(i, j) shared(x, average, b_num, limit)
 	for(i=0; i<(b_num+2); i++)
 	{
 		
@@ -220,33 +210,3 @@ void mean_subtraction(float* average, int** x, int b_num, int limit)
 	}
 	
 }
-
-
-void product_calculation_1(int** x, int** x_product, int limit, int b_num)
-{
-	
-	int i;
-	int j;
-	
-	#pragma omp parallel for \
-                default(none) private(i, j) shared(x, b_num, limit, x_product) 
-	for(i=0; i<(b_num+2);i++)
-	{
-		for(j=0; j<(b_num+2); j++)
-		{
-			int result=0;
-			int k;
-			for(k=0; k<(limit); k++)
-			{
-			    result+=x[k][i]*x[k][j];	
-			}
-			
-			x_product[i][j]=result;
-		}
-		
-	}
-	
-}
-
-
-

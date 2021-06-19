@@ -110,54 +110,28 @@ void initialize_matrix(int** matrix, int x, int y)
 
 void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int* y)
 {
+	
 	int i;
 	int j;
 	
 	for(i=0; i<(x_num*y_num); i++)
     {
-    	int matrix_value_x=0;
-    	int matrix_value_y=0;
-    	fscanf( matrix_file, "%i", &matrix_value_x);
-    	getc(matrix_file);	
-    	fscanf( matrix_file, "%i", &matrix_value_y);
-    	getc(matrix_file);	
-
     	
-    	int a = i*7;
-    	int b=a+7;
-    	
-    	for(a; a<b; a++)
-    	{
-    		x[a][0]= matrix_value_x;
-    		x[a][1]= matrix_value_y;
-    		
-		}
-		
-		
-		a = i*7; 
-		b= a;
-    	
-		int matrix_value=0;
-		
 	
-    	for(j=2; j<(b_num+2); j++)
+    	for(j=0; j<(b_num+2); j++)
     	{
+    		int matrix_value;
     		fscanf( matrix_file, "%i", &matrix_value);
     		getc(matrix_file);		
     		
-			x[b][j]=1;
+			x[i][j]=matrix_value;
 			
-			
-    		
-			int index=(j-2)+a;
-			    	    
-    		y[index]=matrix_value;
-    		
-    	    b=b+1;
+
     	
 		}
 	}
 
+	
 	
 
 	

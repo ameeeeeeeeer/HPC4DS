@@ -67,16 +67,6 @@ main(int argc, char **argv)
     printf("time for reading main matrix %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
 	/*close the file*/
 	fclose(matrix_file);
-	
-	for(i=0; i<(y_num*x_num); i++)
-	{
-		for(j=0; j<(b_num+2); j++)
-		{
-			printf("%i ", x[i][j]);
-		}
-		
-		printf("\n");
-	}
 
 	
 	

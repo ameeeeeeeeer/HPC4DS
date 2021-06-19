@@ -31,6 +31,7 @@ main(int argc, char **argv)
 	fscanf( matrix_file, "%i", &y_num);
 	getc(matrix_file);
 	fscanf( matrix_file, "%i", &b_num);
+	fclose(matrix_file);
 
 
     //1. USED MATRICES CONSTRUCTION
@@ -68,7 +69,6 @@ main(int argc, char **argv)
 	gettimeofday(&end, NULL);
     printf("time for reading main matrix %ld\n", ((end.tv_sec*1000000 + end.tv_usec) - (start.tv_sec*1000000 + start.tv_usec)));
 	/*close the file*/
-	fclose(matrix_file);
 	
 	for(i=0; i<(y_num*x_num); i++)
 	{
@@ -123,17 +123,27 @@ void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int
 {
 	int i;
 	int j;
+	int k;
+	int matrix_value;
+
 	
+
 	
 	#pragma omp parallel for \
-                default(none) private(i, j) shared( x_num, y_num, b_num, x, y, file)
+                default(none) private(i, k, j, matrix_file, matrix_value) shared( x_num, y_num, b_num, x, y)
 	for(i=0; i<(x_num*y_num); i++)
     {
+    		FILE* matrix_file=fopen(argv[1], "r");
+			
+			for(k=0, k<i+3; k++)
+			{
+				fscanf( matrix_file, "%i", &matrix_value);
+    			getc(matrix_file);	
+			}
     	
 	
     	for(j=0; j<(b_num+2); j++)
     	{
-    		int matrix_value;
     		fscanf( matrix_file, "%i", &matrix_value);
     		getc(matrix_file);		
     		
@@ -144,7 +154,8 @@ void read_matrix(FILE* matrix_file, int x_num, int y_num, int b_num, int**x, int
 		}
 	}
 
-	
+		fclose(matrix_file);
+
 
 	
 }
